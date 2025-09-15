@@ -6,8 +6,11 @@ package vistas;
 
 import entidades.Categoria;
 import entidades.Producto;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import modelo.CategoriasDB;
+import modelo.ProductosDB;
 
 /**
  *
@@ -15,18 +18,24 @@ import modelo.CategoriasDB;
  */
 public class GestionProductos extends javax.swing.JFrame {
     
+    
     private CategoriasDB cat;
     private ProductosDB prod;
+    private DefaultTableModel modelo;
+    private Producto prodSelecccionado;
+    
 
     /**
      * Creates new form GestionProductos
      */
     public GestionProductos() {
         initComponents();
+        modelo=  new DefaultTableModel();
         cat = new CategoriasDB();
+        prod = new ProductosDB();
         llenarCombos();
         desactivarCampos();
-        prod = new ProductoDB();
+        armarCabecera();
     }
 
     /**
@@ -66,6 +75,12 @@ public class GestionProductos extends javax.swing.JFrame {
 
         jLabel2.setText("Categoría");
 
+        comboboxCategorias.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboboxCategoriasActionPerformed(evt);
+            }
+        });
+
         tableProductos.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
@@ -77,6 +92,11 @@ public class GestionProductos extends javax.swing.JFrame {
                 "Codigo", "Descripcion", "Precio", "Categoria", "Stock"
             }
         ));
+        tableProductos.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableProductosMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tableProductos);
 
         jLabel3.setText("Código");
@@ -161,15 +181,17 @@ public class GestionProductos extends javax.swing.JFrame {
                         .addComponent(comboboxCategorias, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(12, 12, 12)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel4)
                                     .addComponent(jLabel5))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(textPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(textDescripcion)))
+                                    .addComponent(textDescripcion)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(textPrecio, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 0, Short.MAX_VALUE))))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(13, 13, 13)
                                 .addComponent(buttonNuevo)
@@ -184,17 +206,17 @@ public class GestionProductos extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel3)
-                                        .addGap(30, 30, 30)
-                                        .addComponent(textCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(jLabel6)
                                             .addComponent(jLabel7))
                                         .addGap(18, 18, 18)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addComponent(spinnerStock, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(comboboxCategoriaProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                            .addComponent(comboboxCategoriaProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel3)
+                                        .addGap(30, 30, 30)
+                                        .addComponent(textCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(6, 6, 6)
@@ -253,9 +275,10 @@ public class GestionProductos extends javax.swing.JFrame {
         pro.setCategoria((Categoria)comboboxCategoriaProductos.getSelectedItem());
         pro.setStock((Integer)spinnerStock.getValue());
         
-        prod.guardarProducto(pro);//debo crear ese metodo en prodcutosDB
+        prod.guardarProducto(pro);
         limpiarCampos();
-        desactivarCampos();               
+        desactivarCampos();
+        buttonGuardar.setEnabled(false);
     }//GEN-LAST:event_buttonGuardarActionPerformed
     private void limpiarCampos() {
         textCodigo.setText("");
@@ -267,6 +290,25 @@ public class GestionProductos extends javax.swing.JFrame {
  
     private void buttonActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonActualizarActionPerformed
         // TODO add your handling code here:
+        int codigo=Integer.parseInt(textCodigo.getText());
+        String descripcion = textDescripcion.getText();
+        double precio=Double.parseDouble(textPrecio.getText());
+        Categoria catT=(Categoria)comboboxCategoriaProductos.getSelectedItem();
+        int stock= (Integer)spinnerStock.getValue();
+        
+         prodSelecccionado.setCodigo(codigo);
+            prodSelecccionado.setDescripcion(descripcion);
+            prodSelecccionado.setPrecio(precio);
+            prodSelecccionado.setCategoria(catT);
+            prodSelecccionado.setStock(stock);
+            
+            prod.modificarProducto(prodSelecccionado);
+            prodSelecccionado=null;
+            limpiarCampos();            
+            desactivarCampos();
+            llenarTabla();
+            
+            buttonActualizar.setEnabled(false);
     }//GEN-LAST:event_buttonActualizarActionPerformed
 
     private void buttonNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonNuevoActionPerformed
@@ -277,10 +319,15 @@ public class GestionProductos extends javax.swing.JFrame {
 
     private void buttonBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonBorrarActionPerformed
         // TODO add your handling code here:
+        prod.borrarProducto(prodSelecccionado);
+        desactivarCampos();
+        llenarTabla();
+        buttonBorrar.setEnabled(false);
     }//GEN-LAST:event_buttonBorrarActionPerformed
 
     private void buttonSalirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonSalirActionPerformed
         // TODO add your handling code here:
+        dispose();
     }//GEN-LAST:event_buttonSalirActionPerformed
 
     private void textCodigoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_textCodigoFocusLost
@@ -310,6 +357,41 @@ public class GestionProductos extends javax.swing.JFrame {
             textPrecio.requestFocus();         
         }
     }//GEN-LAST:event_textPrecioFocusLost
+
+    private void comboboxCategoriasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboboxCategoriasActionPerformed
+        // TODO add your handling code here:
+        llenarTabla();
+    }//GEN-LAST:event_comboboxCategoriasActionPerformed
+
+    private void tableProductosMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableProductosMouseClicked
+        // TODO add your handling code here:
+        buttonActualizar.setEnabled(true);
+        buttonBorrar.setEnabled(true);
+        int fila = tableProductos.getSelectedRow();
+        
+        if(fila!=-1){
+            int codigo=(Integer)tableProductos.getValueAt(fila,0);
+            String descripcion = (String)tableProductos.getValueAt(fila,1);
+            double precio= (Double)tableProductos.getValueAt(fila,2);
+            Categoria catT =(Categoria)tableProductos.getValueAt(fila,3);
+            int stock =(Integer)tableProductos.getValueAt(fila,4);
+            textCodigo.setText(codigo +"");
+            textDescripcion.setText(descripcion);
+            textPrecio.setText(precio+"");
+            comboboxCategoriaProductos.setSelectedItem(catT);
+            spinnerStock.setValue(stock);
+            
+            activarCampos();
+            prodSelecccionado = new Producto();
+            prodSelecccionado.setCodigo(codigo);
+            prodSelecccionado.setDescripcion(descripcion);
+            prodSelecccionado.setPrecio(precio);
+            prodSelecccionado.setCategoria(catT);
+            prodSelecccionado.setStock(stock);
+            
+        }
+        
+    }//GEN-LAST:event_tableProductosMouseClicked
 
     /**
      * @param args the command line arguments
@@ -368,6 +450,37 @@ public class GestionProductos extends javax.swing.JFrame {
         spinnerStock.setEnabled(false);
         comboboxCategoriaProductos.setEnabled(false);
     }
+      private void armarCabecera(){
+        ArrayList<Object> columnas = new ArrayList<Object>();
+     columnas.add("Codigo");
+     columnas.add("Descripcion");
+     columnas.add("Precio");
+     columnas.add("Categoria");
+     columnas.add("Stock");
+     for(Object col:columnas){
+         modelo.addColumn(col);
+     }
+     tableProductos.setModel(modelo);
+ }
+      private void llenarTabla(){
+           //borrarFilas();          
+          Categoria catSeleccionada = (Categoria)comboboxCategorias.getSelectedItem();
+          if(catSeleccionada != null){
+              for(Producto p:prod.getProductos()){
+                  if(p.getCategoria().equals(catSeleccionada)){
+                      modelo.addRow(new Object[]{
+                          p.getCodigo(),p.getDescripcion(),p.getPrecio(),p.getCategoria(),p.getStock()
+                      });
+                  }
+              }
+          }
+      }
+     /* private void borrarFilas(){
+            int f = tableProductos.getRowCount()-1;
+     for (;f>=0;f--){
+         modelo.removeRow(f );
+     }
+      }*/
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton buttonActualizar;
@@ -392,5 +505,5 @@ public class GestionProductos extends javax.swing.JFrame {
     private javax.swing.JTextField textPrecio;
     // End of variables declaration//GEN-END:variables
 
-   
+  
 }

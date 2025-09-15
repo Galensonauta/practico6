@@ -8,7 +8,7 @@ package entidades;
  *
  * @author y
  */
-public class Producto {
+public class Producto implements Comparable<Producto>{
     private int codigo,stock;
     private String descripcion;
     private double precio;
@@ -89,7 +89,21 @@ public class Producto {
             return false;
         }
         final Producto other = (Producto) obj;
-        return this.codigo == other.codigo;
+        if(this.codigo != other.codigo){
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int compareTo(Producto o) {
+        if(codigo== o.codigo){
+            return 0;
+        }else if(codigo>o.codigo){
+            return 1;
+        }else{
+            return -1;
+        }
     }
     
     

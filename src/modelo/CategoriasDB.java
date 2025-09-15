@@ -18,6 +18,5 @@ public class CategoriasDB {
         lista.add(new Categoria(2,"Limpieza"));
         lista.add(new Categoria(3,"Perfumeria"));
         return lista;        
-    }
-    
+    }    
 }
