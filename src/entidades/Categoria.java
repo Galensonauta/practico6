@@ -11,7 +11,10 @@ import java.util.Objects;
  * @author y
  */
 public class Categoria {
-    private int orden;
+    /*COMESTIBLE,
+    LIMPIEZA,
+    PERFUMERIA*/
+   private int orden;
     private String nombre;
 
     public Categoria() {

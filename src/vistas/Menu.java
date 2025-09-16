@@ -6,8 +6,10 @@ package vistas;
 
 import entidades.Categoria;
 import entidades.Producto;
+import java.awt.List;
 import java.util.TreeSet;
 import modelo.CategoriasDB;
+import modelo.ProductosDB;
 
 /**
  *
@@ -15,13 +17,17 @@ import modelo.CategoriasDB;
  */
 public class Menu extends javax.swing.JFrame {
     public static TreeSet<Producto> listaProductos = new TreeSet<>();
-    private CategoriasDB catDB;
-
+    private ProductosDB prodDB;
     /**
      * Creates new form Menu
      */
     public Menu() {
         initComponents();
+        prodDB = new ProductosDB();
+        cargarProductos();
+        
+  
+        
     }
 
     /**
@@ -56,6 +62,11 @@ public class Menu extends javax.swing.JFrame {
         );
 
         jMenu1.setText("Administracion");
+        jMenu1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenu1ActionPerformed(evt);
+            }
+        });
 
         jMenuItem1.setText("Productos");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -83,9 +94,19 @@ public class Menu extends javax.swing.JFrame {
         jMenu2.add(jMenuItem2);
 
         jMenuItem3.setText("Por Categoria");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
         jMenu2.add(jMenuItem3);
 
         jMenuItem4.setText("Por Precio");
+        jMenuItem4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem4ActionPerformed(evt);
+            }
+        });
         jMenu2.add(jMenuItem4);
 
         jMenuBar1.add(jMenu2);
@@ -125,8 +146,39 @@ public class Menu extends javax.swing.JFrame {
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         // TODO add your handling code here:
-        cargarProductos();
+         escritorio.removeAll();
+        escritorio.repaint();
+        GestionProductos gp = new GestionProductos();
+        gp.setVisible(true);
+        escritorio.add(gp);
+        escritorio.moveToFront(gp);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void jMenu1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenu1ActionPerformed
+        // TODO add your handling code here:
+       
+    }//GEN-LAST:event_jMenu1ActionPerformed
+
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4ActionPerformed
+        // TODO add your handling code here:
+        escritorio.removeAll();
+        escritorio.repaint();
+        PorPrecio btnPrecio = new PorPrecio();
+        btnPrecio.setVisible(true);
+        escritorio.add(btnPrecio);
+        escritorio.moveToFront(btnPrecio);
+    }//GEN-LAST:event_jMenuItem4ActionPerformed
+
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        // TODO add your handling code here:
+         escritorio.removeAll();
+        escritorio.repaint();
+        PorCategoria btnCategoria = new PorCategoria();
+        btnCategoria.setVisible(true);
+        escritorio.add(btnCategoria);
+        escritorio.moveToFront(btnCategoria);
+        
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -173,7 +225,10 @@ public class Menu extends javax.swing.JFrame {
     private javax.swing.JMenuItem jMenuItem3;
     private javax.swing.JMenuItem jMenuItem4;
     // End of variables declaration//GEN-END:variables
- private void cargarProductos(){
-    
+  public void cargarProductos(){
+     listaProductos.clear();
+     listaProductos.addAll(prodDB.getProductos());
+     
+     
 }
 }

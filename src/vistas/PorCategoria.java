@@ -4,29 +4,32 @@
  */
 package vistas;
 
+import entidades.Categoria;
 import entidades.Producto;
 import javax.swing.table.DefaultTableModel;
-import modelo.ProductosDB;
+import modelo.CategoriasDB;
 
 /**
  *
  * @author y
  */
-public class PorNombre extends javax.swing.JInternalFrame {
+public class PorCategoria extends javax.swing.JInternalFrame {
+        private CategoriasDB cat;
+
     private DefaultTableModel modelo = new DefaultTableModel(){
         public boolean isCellEditable(int f, int c){
             return false;
         }
     };
-    
 
     /**
-     * Creates new form PorNombre
+     * Creates new form PorCategoria
      */
-    public PorNombre() {
+    public PorCategoria() {
         initComponents();
+        cat = new CategoriasDB();
         armarCabecera();
-        
+        llenarCombos();        
     }
 
     /**
@@ -40,25 +43,18 @@ public class PorNombre extends javax.swing.JInternalFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        textNombreProducto = new javax.swing.JTextField();
+        comboboxCategoriasProductos = new javax.swing.JComboBox<>();
         jScrollPane1 = new javax.swing.JScrollPane();
         tableProductos = new javax.swing.JTable();
 
-        setClosable(true);
-
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel1.setText("Listado de Productos por nombre");
+        jLabel1.setText("Listado por Categoria");
 
-        jLabel2.setText("Escriba el nombre");
+        jLabel2.setText("Seleccione una categoria");
 
-        textNombreProducto.addActionListener(new java.awt.event.ActionListener() {
+        comboboxCategoriasProductos.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                textNombreProductoActionPerformed(evt);
-            }
-        });
-        textNombreProducto.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                textNombreProductoKeyReleased(evt);
+                comboboxCategoriasProductosActionPerformed(evt);
             }
         });
 
@@ -79,64 +75,49 @@ public class PorNombre extends javax.swing.JInternalFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(19, 19, 19)
+                .addComponent(jLabel2)
+                .addGap(18, 18, 18)
+                .addComponent(comboboxCategoriasProductos, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(34, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(18, 18, 18)
-                        .addComponent(textNombreProducto))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 55, Short.MAX_VALUE)
-                        .addComponent(jLabel1)))
-                .addGap(50, 50, 50))
-            .addGroup(layout.createSequentialGroup()
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addGap(96, 96, 96))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(textNombreProducto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
+                    .addComponent(comboboxCategoriasProductos, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addGap(0, 64, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void textNombreProductoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_textNombreProductoKeyReleased
+    private void comboboxCategoriasProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboboxCategoriasProductosActionPerformed
         // TODO add your handling code here:
-        borrarFilas();
-        for(Producto prod:Menu.listaProductos){
-            if(prod.getDescripcion().startsWith(textNombreProducto.getText())){
-                modelo.addRow(new Object[]{
-                    prod.getCodigo(),
-                    prod.getDescripcion(),
-                    prod.getPrecio(),
-                    prod.getStock()
-                });
-            }
-        }
-    }//GEN-LAST:event_textNombreProductoKeyReleased
-
-    private void textNombreProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textNombreProductoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_textNombreProductoActionPerformed
-
+        llenarTabla();
+    }//GEN-LAST:event_comboboxCategoriasProductosActionPerformed
+   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JComboBox<Categoria> comboboxCategoriasProductos;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tableProductos;
-    private javax.swing.JTextField textNombreProducto;
     // End of variables declaration//GEN-END:variables
  private void armarCabecera(){
      modelo.addColumn("Codigo");
@@ -151,4 +132,22 @@ public class PorNombre extends javax.swing.JInternalFrame {
          modelo.removeRow(f);
      }
  }
+ private void llenarTabla(){
+           borrarFilas();          
+          Categoria catSeleccionada = (Categoria)comboboxCategoriasProductos.getSelectedItem();
+          if(catSeleccionada != null){
+              for(Producto p: Menu.listaProductos){
+                  if(p.getCategoria().equals(catSeleccionada)){
+                      modelo.addRow(new Object[]{
+                          p.getCodigo(),p.getDescripcion(),p.getPrecio(),p.getCategoria(),p.getStock()
+                      });
+                  }
+              }
+          }
+      }
+ private void llenarCombos(){        
+        for(Categoria c:cat.getCategorias()){
+            comboboxCategoriasProductos.addItem(c);
+        }
+    }
 }

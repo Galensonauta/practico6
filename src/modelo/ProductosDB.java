@@ -6,17 +6,18 @@ package modelo;
 
 import entidades.Categoria;
 import entidades.Producto;
+import java.awt.List;
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 /**
  *
  * @author y
  */
 public class ProductosDB {
-    private ArrayList<Producto> lista= new ArrayList<>();
+   private ArrayList<Producto> lista= new ArrayList<>();
     
     public void guardarProducto(Producto p){
-        p.setCodigo(lista.size()+1);
         lista.add(p);
     }
     public ArrayList<Producto> getProductos(){
@@ -32,11 +33,9 @@ public class ProductosDB {
                 p.setPrecio(pn.getPrecio());
                 p.setCategoria(pn.getCategoria());
                 p.setStock(pn.getStock());
-
                 break;
             }
         }
-    }
-    
+    }   
     
 }

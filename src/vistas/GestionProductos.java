@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelo.CategoriasDB;
 import modelo.ProductosDB;
+import static vistas.Menu.listaProductos;
 
 /**
  *
@@ -18,11 +19,10 @@ import modelo.ProductosDB;
  */
 public class GestionProductos extends javax.swing.JFrame {
     
-    
-    private CategoriasDB cat;
-    private ProductosDB prod;
     private DefaultTableModel modelo;
+    private CategoriasDB cat;
     private Producto prodSelecccionado;
+    private ProductosDB prodDB;
     
 
     /**
@@ -32,11 +32,13 @@ public class GestionProductos extends javax.swing.JFrame {
         initComponents();
         modelo=  new DefaultTableModel();
         cat = new CategoriasDB();
-        prod = new ProductosDB();
+       prodDB = new ProductosDB();              
+                
         llenarCombos();
         desactivarCampos();
-        armarCabecera();
+        armarCabecera();        
     }
+   
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -124,6 +126,12 @@ public class GestionProductos extends javax.swing.JFrame {
         textPrecio.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 textPrecioFocusLost(evt);
+            }
+        });
+
+        comboboxCategoriaProductos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboboxCategoriaProductosActionPerformed(evt);
             }
         });
 
@@ -272,21 +280,18 @@ public class GestionProductos extends javax.swing.JFrame {
         Producto pro = new Producto();
         pro.setCodigo(Integer.parseInt(textCodigo.getText()));
         pro.setDescripcion(textDescripcion.getText());
+        pro.setPrecio(Double.parseDouble(textPrecio.getText()));
         pro.setCategoria((Categoria)comboboxCategoriaProductos.getSelectedItem());
         pro.setStock((Integer)spinnerStock.getValue());
         
-        prod.guardarProducto(pro);
+        prodDB.guardarProducto(pro);
+        Menu.listaProductos.add(pro);
+        llenarTabla();
         limpiarCampos();
         desactivarCampos();
         buttonGuardar.setEnabled(false);
     }//GEN-LAST:event_buttonGuardarActionPerformed
-    private void limpiarCampos() {
-        textCodigo.setText("");
-        textDescripcion.setText("");
-        textPrecio.setText("");
-        comboboxCategoriaProductos.setSelectedIndex(0);
-        spinnerStock.setValue(0);
-    }
+    
  
     private void buttonActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonActualizarActionPerformed
         // TODO add your handling code here:
@@ -296,17 +301,18 @@ public class GestionProductos extends javax.swing.JFrame {
         Categoria catT=(Categoria)comboboxCategoriaProductos.getSelectedItem();
         int stock= (Integer)spinnerStock.getValue();
         
-         prodSelecccionado.setCodigo(codigo);
+            prodSelecccionado.setCodigo(codigo);
             prodSelecccionado.setDescripcion(descripcion);
             prodSelecccionado.setPrecio(precio);
             prodSelecccionado.setCategoria(catT);
             prodSelecccionado.setStock(stock);
             
-            prod.modificarProducto(prodSelecccionado);
-            prodSelecccionado=null;
+            prodDB.modificarProducto(prodSelecccionado);     
+            Menu.listaProductos.removeIf(p -> p.getCodigo() == prodSelecccionado.getCodigo());
+            Menu.listaProductos.add(prodSelecccionado);            
+            llenarTabla();
             limpiarCampos();            
             desactivarCampos();
-            llenarTabla();
             
             buttonActualizar.setEnabled(false);
     }//GEN-LAST:event_buttonActualizarActionPerformed
@@ -319,9 +325,10 @@ public class GestionProductos extends javax.swing.JFrame {
 
     private void buttonBorrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonBorrarActionPerformed
         // TODO add your handling code here:
-        prod.borrarProducto(prodSelecccionado);
-        desactivarCampos();
+        prodDB.borrarProducto(prodSelecccionado);
+        Menu.listaProductos.removeIf(p -> p.getCodigo() == prodSelecccionado.getCodigo());
         llenarTabla();
+        desactivarCampos();
         buttonBorrar.setEnabled(false);
     }//GEN-LAST:event_buttonBorrarActionPerformed
 
@@ -393,6 +400,10 @@ public class GestionProductos extends javax.swing.JFrame {
         
     }//GEN-LAST:event_tableProductosMouseClicked
 
+    private void comboboxCategoriaProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboboxCategoriaProductosActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_comboboxCategoriaProductosActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -429,8 +440,32 @@ public class GestionProductos extends javax.swing.JFrame {
         });
     }
     
-    private void llenarCombos(){
-        
+ 
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton buttonActualizar;
+    private javax.swing.JButton buttonBorrar;
+    private javax.swing.JButton buttonGuardar;
+    private javax.swing.JButton buttonNuevo;
+    private javax.swing.JButton buttonSalir;
+    private javax.swing.JComboBox<Categoria> comboboxCategoriaProductos;
+    private javax.swing.JComboBox<Categoria> comboboxCategorias;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JSpinner spinnerStock;
+    private javax.swing.JTable tableProductos;
+    private javax.swing.JTextField textCodigo;
+    private javax.swing.JTextField textDescripcion;
+    private javax.swing.JTextField textPrecio;
+    // End of variables declaration//GEN-END:variables
+   
+    private void llenarCombos(){        
         for(Categoria c:cat.getCategorias()){
             comboboxCategorias.addItem(c);
             comboboxCategoriaProductos.addItem(c);
@@ -463,10 +498,10 @@ public class GestionProductos extends javax.swing.JFrame {
      tableProductos.setModel(modelo);
  }
       private void llenarTabla(){
-           //borrarFilas();          
+           borrarFilas();          
           Categoria catSeleccionada = (Categoria)comboboxCategorias.getSelectedItem();
           if(catSeleccionada != null){
-              for(Producto p:prod.getProductos()){
+              for(Producto p: Menu.listaProductos){
                   if(p.getCategoria().equals(catSeleccionada)){
                       modelo.addRow(new Object[]{
                           p.getCodigo(),p.getDescripcion(),p.getPrecio(),p.getCategoria(),p.getStock()
@@ -475,35 +510,20 @@ public class GestionProductos extends javax.swing.JFrame {
               }
           }
       }
-     /* private void borrarFilas(){
-            int f = tableProductos.getRowCount()-1;
+     private void borrarFilas(){
+            int f = modelo.getRowCount()-1;
      for (;f>=0;f--){
          modelo.removeRow(f );
      }
-      }*/
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton buttonActualizar;
-    private javax.swing.JButton buttonBorrar;
-    private javax.swing.JButton buttonGuardar;
-    private javax.swing.JButton buttonNuevo;
-    private javax.swing.JButton buttonSalir;
-    private javax.swing.JComboBox<Categoria> comboboxCategoriaProductos;
-    private javax.swing.JComboBox<Categoria> comboboxCategorias;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSpinner spinnerStock;
-    private javax.swing.JTable tableProductos;
-    private javax.swing.JTextField textCodigo;
-    private javax.swing.JTextField textDescripcion;
-    private javax.swing.JTextField textPrecio;
-    // End of variables declaration//GEN-END:variables
-
+      }
+      private void limpiarCampos() {
+        textCodigo.setText("");
+        textDescripcion.setText("");
+        textPrecio.setText("");
+        comboboxCategoriaProductos.setSelectedIndex(0);
+        spinnerStock.setValue(0);
+    }
+      
+      
   
 }

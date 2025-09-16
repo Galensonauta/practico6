@@ -89,11 +89,10 @@ public class Producto implements Comparable<Producto>{
             return false;
         }
         final Producto other = (Producto) obj;
-        if(this.codigo != other.codigo){
-            return false;
-        }
-        return true;
+        return this.codigo == other.codigo;
     }
+
+   
 
     @Override
     public int compareTo(Producto o) {
